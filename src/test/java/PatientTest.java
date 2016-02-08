@@ -8,23 +8,12 @@ import ca.uhn.fhir.rest.client.IGenericClient;
 
 public class PatientTest {
     @Test
-    public void multiplicationOfZeroIntegersShouldReturnZero() {
-
-        assertEquals("10 x 0 must be 0", 0, 0);
-        assertEquals("0 x 10 must be 0", 0, 0);
-        assertEquals("0 x 0 must be 0", 1, 1);
-    }
-
-    @Test
     public void testPatient() {
-        System.out.println("fast");
-        System.out.println("Hello, World");
         FhirContext ctx = FhirContext.forDstu2();
-        String serverBase = "http://fhirtest.uhn.ca/baseDstu2";// "https://maksym.aidbox.io/fhir"; //
+        String serverBase = "http://fhirtest.uhn.ca/baseDstu2";
 
         IGenericClient client = ctx.newRestfulGenericClient(serverBase);
 
-// Perform a search
         Bundle results = client
                 .search()
                 .forResource(Patient.class)
@@ -32,8 +21,6 @@ public class PatientTest {
                 .returnBundle(ca.uhn.fhir.model.dstu2.resource.Bundle.class)
                 .execute();
 
-        System.out.println("Found " + results.getEntry().size() + " patients named 'duck'");
-
-        assertEquals("0 x 0 must be 0", 10, results.getEntry().size());
+        assertEquals("Must be 10 patients named 'duck'", 10, results.getEntry().size());
     }
 }
