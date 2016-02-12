@@ -17,7 +17,7 @@ public class ExampleTest {
     @Test
     public void testExample() {
         FhirContext ctx = FhirContext.forDstu2();
-        String serverBase = "http://fhirtest.uhn.ca/baseDstu2";//"http://test.aidbox.local/fhir"; //"http://hapi.devbox.health-samurai.io/fhir";//
+        String serverBase = "http://hapi.devbox.health-samurai.io/fhir";// "http://test.aidbox.local/fhir"; //"http://fhirtest.uhn.ca/baseDstu2";//
 
         IGenericClient client = ctx.newRestfulGenericClient(serverBase);
 
@@ -73,7 +73,7 @@ public class ExampleTest {
     @Test
     public void testDemo() {
         FhirContext ctx = FhirContext.forDstu2();
-        String serverBase = "http://fhirtest.uhn.ca/baseDstu2";//"http://test.aidbox.local/fhir"; //"http://hapi.devbox.health-samurai.io/fhir";//
+        String serverBase = "http://hapi.devbox.health-samurai.io/fhir";//"http://test.aidbox.local/fhir"; //"http://fhirtest.uhn.ca/baseDstu2";//
 
         IGenericClient client = ctx.newRestfulGenericClient(serverBase);
 
@@ -114,7 +114,8 @@ public class ExampleTest {
 
         Bundle medicationBundle = client.search()
                 .forResource(MedicationAdministration.class)
-                .where(MedicationAdministration.IDENTIFIER.exactly().identifier(medicationIdentifier))
+                //.where(MedicationAdministration.IDENTIFIER.exactly().identifier(medicationIdentifier))
+                .where(MedicationAdministration.PATIENT.hasId(idPatient))
                 .returnBundle(Bundle.class).execute();
 
         assertEquals("Must be 1 patient", 1, patientBundle.getEntry().size());
