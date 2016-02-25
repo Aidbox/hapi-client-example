@@ -7,6 +7,7 @@ import ca.uhn.fhir.model.dstu2.resource.MedicationAdministration;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.interceptor.BasicAuthInterceptor;
+import ca.uhn.fhir.rest.server.EncodingEnum;
 import org.junit.Test;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
@@ -14,12 +15,20 @@ import ca.uhn.fhir.model.dstu2.resource.Patient;
 import ca.uhn.fhir.rest.client.IGenericClient;
 
 public class ExampleTest {
+    //String serverBase = "http://hapi.devbox.health-samurai.io/fhir";// "http://test.aidbox.local/fhir"; //"http://fhirtest.uhn.ca/baseDstu2";//
+    String serverBase = "http://test.aidbox.dev.health-samurai.io:3000/fhir/";
+
+    public IGenericClient getClient(){
+        FhirContext ctx = FhirContext.forDstu2();
+        IGenericClient client = ctx.newRestfulGenericClient(serverBase);
+        client.setEncoding(EncodingEnum.XML);
+        //client.setEncoding(EncodingEnum.JSON);
+        return client;
+    }
+
     @Test
     public void testExample() {
-        FhirContext ctx = FhirContext.forDstu2();
-        String serverBase = "http://hapi.devbox.health-samurai.io/fhir";// "http://test.aidbox.local/fhir"; //"http://fhirtest.uhn.ca/baseDstu2";//
-
-        IGenericClient client = ctx.newRestfulGenericClient(serverBase);
+        IGenericClient client = getClient();
 
         System.out.println("Patient");
         Patient patient = new Patient();
@@ -30,7 +39,6 @@ public class ExampleTest {
                 .resource(patient)
                 .conditional()
                 .where(Patient.IDENTIFIER.exactly().systemAndIdentifier("urn:system", "value-aidbox"))
-                .encodedJson()
                 .execute();
 
         IdDt id = (IdDt) outcome.getId();
@@ -52,7 +60,6 @@ public class ExampleTest {
                 .resource(medication)
                 .conditional()
                 .where(MedicationAdministration.PATIENT.hasId(id))
-                .encodedJson()
                 .execute();
 
         Bundle medications = client
@@ -72,11 +79,7 @@ public class ExampleTest {
 
     @Test
     public void testDemo() {
-        FhirContext ctx = FhirContext.forDstu2();
-        String serverBase = "http://hapi.devbox.health-samurai.io/fhir";//"http://test.aidbox.local/fhir"; //"http://fhirtest.uhn.ca/baseDstu2";//
-
-        IGenericClient client = ctx.newRestfulGenericClient(serverBase);
-
+        IGenericClient client = getClient();
         //BasicAuthInterceptor authInterceptor = new BasicAuthInterceptor("Username", "Password");
         //client.registerInterceptor(authInterceptor);
 
@@ -91,7 +94,6 @@ public class ExampleTest {
                 .resource(patient)
                 .conditional()
                 .where(Patient.IDENTIFIER.exactly().identifier(patientIdentifier))
-                .encodedJson()
                 .execute();
 
         IdDt idPatient = (IdDt) outcome.getId();
@@ -104,7 +106,6 @@ public class ExampleTest {
                 .resource(medication)
                 .conditional()
                 .where(MedicationAdministration.PATIENT.hasId(idPatient))
-                .encodedJson()
                 .execute();
 
         Bundle patientBundle = client.search()
